@@ -1,0 +1,20 @@
+<!-- lessons/templates/lessons/lesson_list.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lessons</title>
+</head>
+<body>
+    <h1>Lesson List</h1>
+    {% for lesson in lessons %}
+        <div style="margin-bottom: 30px;">
+            <h2>{{ lesson.title }}</h2>
+            <p>{{ lesson.description }}</p>
+            <iframe width="560" height="315" src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+        </div>
+    {% empty %}
+        <p>No lessons yet.</p>
+    {% endfor %}
+</body>
+</html>
