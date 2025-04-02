@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from games.models import GameResult  
 
 def register(request):
     if request.method == 'POST':
@@ -19,3 +20,11 @@ def register(request):
 @login_required
 def profile(request):
     return render(request, 'accounts/profile.html')
+
+
+@login_required
+def profile(request):
+    user_results = GameResult.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'accounts/profile.html', {
+        'user_results': user_results
+    })
