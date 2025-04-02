@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}English Llama 🦙{% endblock %}</title>
+</head>
+<body>
+
+    <!-- 🌐 Navbar -->
+    <nav>
+        <a href="{% url 'homepage' %}">🏠 Home</a>
+        <a href="/lessons/">🎓 Lessons</a>
+        <a href="{% url 'memory_game' %}">🧠 Games</a>
+        <a href="{% url 'leaderboard' difficulty='easy' %}">🏆 Leaderboard</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}">👤 Profile</a>
+            <a href="{% url 'logout' %}">🚪 Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">🔐 Login</a>
+            <a href="{% url 'register' %}">📝 Register</a>
+        {% endif %}
+    </nav>
+
+    <hr>
+
+    <!-- 🧩 Page Content -->
+    {% block content %}
+    {% endblock %}
+
+    <hr>
+
+    <!-- 📦 Footer -->
+    <footer>
+        <p>&copy; {{ now|date:"Y" }} English Llama 🦙 — Built by Damian 💻</p>
+    </footer>
+
+</body>
+</html>

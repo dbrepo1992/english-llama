@@ -3,7 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from games.models import GameResult  
+from games.models import GameResult
+from django.utils.timezone import now
 
 def register(request):
     if request.method == 'POST':
@@ -28,3 +29,8 @@ def profile(request):
     return render(request, 'accounts/profile.html', {
         'user_results': user_results
     })
+
+
+
+def homepage(request):
+    return render(request, 'games/homepage.html', {'now': now()})
