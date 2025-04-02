@@ -13,6 +13,9 @@
     <h1>Memory Game</h1>
     <div id="game-board"></div>
 
+    <h2>Time: <span id="timer">0</span> seconds</h2>
+    <h2>Score: <span id="score">0</span> / 3</h2>
+
     <script>
         const cards = ['🐶','🐱','🦊','🐶','🐱','🦊'];
         let shuffled = cards.sort(() => 0.5 - Math.random());
@@ -47,7 +50,75 @@
                 }
                 flipped = [];
             }
-        });
+        }
+        let time = 0;
+let score = 0;
+let timerInterval;
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        time += 1;
+        document.getElementById('timer').innerText = time;
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+// start the timer when first card is clicked
+let firstClick = true;
+
+board.addEventListener('click', e => {
+    const card = e.target;
+    if (!card.classList.contains('card') || card.classList.contains('matched') || flipped.length === 2) return;
+
+    if (firstClick) {
+        startTimer();
+        firstClick = false;
+    }
+
+    card.innerText = card.dataset.emoji;
+    flipped.push(card);
+
+    if (flipped.length === 2) {
+        if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
+            flipped[0].classList.add('matched');
+            flipped[1].classList.add('matched');
+            score++;
+            document.getElementById('score').innerText = score;
+
+            if (score === 3) {
+                stopTimer();
+                alert("You win! Time: " + time + " seconds");
+                sendScoreToServer(time, score); // 👈 new function
+            }
+        } else {
+            setTimeout(() => {
+                flipped[0].innerText = '?';
+                flipped[1].innerText = '?';
+            }, 700);
+        }
+        flipped = [];
+    }
+});
+
+// AJAX send score to server
+function sendScoreToServer(time, score) {
+    fetch('/games/submit_score/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ time: time, score: score })
+    })
+    .then(res => res.json())
+    .then(data => console.log("Score saved:", data))
+    .catch(err => console.error("Error saving score:", err));
+}
+
+    );
     </script>
 </body>
 </html>
