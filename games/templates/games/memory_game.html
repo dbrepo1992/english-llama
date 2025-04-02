@@ -23,19 +23,30 @@
 <body>
     <h1>Memory Game</h1>
     <h2>Time: <span id="timer">0</span> seconds</h2>
-    <h2>Score: <span id="score">0</span> / 3</h2>
+    <h2>Score: <span id="score">0</span></h2>
+    <h2>Select Difficulty:</h2>
+        <select id="difficulty">
+        <option value="easy">Easy (3 pairs)</option>
+        <option value="medium">Medium (6 pairs)</option>
+        <option value="hard">Hard (9 pairs)</option>
+        </select>
+    <button onclick="startGame()">Start Game</button>
 
     <div id="game-board"></div>
+        <div id="game-board"></div>
 
     <script>
-        const cards = ['🐶','🐱','🦊','🐶','🐱','🦊'];
-        const shuffled = cards.sort(() => 0.5 - Math.random());
-        const board = document.getElementById('game-board');
+        const CARD_SETS = {
+            easy: ['🐶','🐱','🦊'],
+            medium: ['🐶','🐱','🦊','🐰','🐸','🐵'],
+            hard: ['🐶','🐱','🦊','🐰','🐸','🐵','🐻','🐼','🦁']
+        };
+
         let flipped = [];
         let score = 0;
         let time = 0;
         let timerInterval;
-        let firstClick = true;
+        let totalPairs = 0;
 
         function startTimer() {
             timerInterval = setInterval(() => {
@@ -62,23 +73,40 @@
             .catch(err => console.error("Error saving score:", err));
         }
 
-        shuffled.forEach((emoji, index) => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.dataset.emoji = emoji;
-            card.dataset.index = index;
-            card.innerText = '?';
-            board.appendChild(card);
-        });
+        function startGame() {
+            document.getElementById('game-board').innerHTML = '';
+            document.getElementById('score').innerText = 0;
+            document.getElementById('timer').innerText = 0;
+            score = 0;
+            time = 0;
+            flipped = [];
+            stopTimer();
 
-        board.addEventListener('click', e => {
+            const difficulty = document.getElementById('difficulty').value;
+            const emojis = CARD_SETS[difficulty];
+            totalPairs = emojis.length;
+            const cards = [...emojis, ...emojis].sort(() => 0.5 - Math.random());
+
+            const board = document.getElementById('game-board');
+
+            cards.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.emoji = emoji;
+                card.dataset.index = index;
+                card.innerText = '?';
+                board.appendChild(card);
+            });
+
+            board.addEventListener('click', handleCardClick, { once: true });
+            startTimer();
+        }
+
+        function handleCardClick(e) {
+            const board = document.getElementById('game-board');
+            board.addEventListener('click', handleCardClick);
             const card = e.target;
             if (!card.classList.contains('card') || card.classList.contains('matched') || flipped.length === 2) return;
-
-            if (firstClick) {
-                startTimer();
-                firstClick = false;
-            }
 
             card.innerText = card.dataset.emoji;
             flipped.push(card);
@@ -90,7 +118,7 @@
                     score++;
                     document.getElementById('score').innerText = score;
 
-                    if (score === 3) {
+                    if (score === totalPairs) {
                         stopTimer();
                         alert(`You win! Time: ${time} seconds`);
                         sendScoreToServer(time, score);
@@ -103,7 +131,8 @@
                 }
                 flipped = [];
             }
-        });
-    </script>
+        }
+        </script>
+
 </body>
 </html>
