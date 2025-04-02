@@ -60,18 +60,21 @@
         }
 
         function sendScoreToServer(time, score) {
+            const difficulty = document.getElementById('difficulty').value;
+
             fetch('/games/submit_score/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': '{{ csrf_token }}'
                 },
-                body: JSON.stringify({ time: time, score: score })
+                body: JSON.stringify({ time: time, score: score, difficulty: difficulty })
             })
             .then(res => res.json())
             .then(data => console.log("Score saved:", data))
             .catch(err => console.error("Error saving score:", err));
         }
+
 
         function startGame() {
             document.getElementById('game-board').innerHTML = '';

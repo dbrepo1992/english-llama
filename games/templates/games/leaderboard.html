@@ -1,0 +1,13 @@
+<h1>{{ difficulty|title }} Leaderboard 🏆</h1>
+
+{% if results %}
+    <ol>
+        {% for r in results %}
+            <li>{{ r.user.username }} — {{ r.score }} pts — {{ r.time }}s</li>
+        {% endfor %}
+    </ol>
+{% else %}
+    <p>No results yet for this difficulty.</p>
+{% endif %}
+
+<p><a href="{% url 'memory_game' %}">Back to game</a></p>
