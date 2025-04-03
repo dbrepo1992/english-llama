@@ -18,19 +18,28 @@ def register(request):
 
     return render(request, 'accounts/register.html', {'form': form})
 
-@login_required
-def profile(request):
-    return render(request, 'accounts/profile.html')
-
 
 @login_required
-def profile(request):
-    user_results = GameResult.objects.filter(user=request.user).order_by('-created_at')
+def profile_view(request):
+    user = request.user
+    results = GameResult.objects.filter(user=user).order_by('-created_at')  # adjust field if needed
+
+    # Best scores by difficulty
+    best_scores = {}
+    for difficulty in ['easy', 'medium', 'hard']:
+        best = results.filter(difficulty=difficulty).order_by('-score', 'time').first()
+        best_scores[difficulty] = best
+
     return render(request, 'accounts/profile.html', {
-        'user_results': user_results
+        'results': results,
+        'best_scores': best_scores,
     })
+
 
 
 
 def homepage(request):
     return render(request, 'games/homepage.html', {'now': now()})
+
+
+
