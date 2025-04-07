@@ -6,34 +6,42 @@
 <body>
     {% extends "games/base.html" %}
 
-{% block title %}Profile | English Llama{% endblock %}
+    {% block title %}Profile | English Llama{% endblock %}
 
-{% block content %}
-<h1>👤 {{ user.username }}'s Profile</h1>
+    {% block content %}
+    <h1>👤 {{ user.username }}'s Profile</h1>
 
-{% if results %}
-    <h2>📊 Game History</h2>
+    <h2>📊 Your Game Stats</h2>
     <ul>
-        {% for result in results %}
+        <li>🕹️ Total Games Played: {{ stats.total_games }}</li>
+        <li>📈 Average Score: {{ stats.average_score|floatformat:1 }}</li>
+        <li>⏱️ Average Time: {{ stats.average_time|floatformat:1 }} seconds</li>
+        <li>📅 First Game: {{ stats.first_game|date:"Y-m-d H:i" }}</li>
+        <li>🕓 Latest Game: {{ stats.last_game|date:"Y-m-d H:i" }}</li>
+    </ul>
+
+    <h2>🏆 Best Scores by Difficulty</h2>
+    <ul>
+        {% for level, result in best_scores.items %}
             <li>
-                🧠 Score: {{ result.score }} / 3 — ⏱️ Time: {{ result.time }}s — 📅 {{ result.created_at|date:"Y-m-d H:i" }}
+                {{ level|title }} — {{ result.score }} / 3 in {{ result.time }}s
             </li>
+        {% empty %}
+            <li>No scores yet.</li>
         {% endfor %}
     </ul>
-{% else %}
-    <p>You haven't played the memory game yet.</p>
-{% endif %}
 
-<h2>🏆 Best Scores by Difficulty</h2>
-<ul>
-    {% for level, result in best_scores.items %}
-        <li>
-            {{ level|title }}: {{ result.score }} / 3 in {{ result.time }}s ({{ result.created_at|date:"Y-m-d" }})
-        </li>
-    {% endfor %}
-</ul>
-{% endblock %}
-
+    <h2>🧠 Recent Games</h2>
+    <ul>
+        {% for result in user_results %}
+            <li>
+                {{ result.created_at|date:"Y-m-d H:i" }} — {{ result.difficulty|title }} — {{ result.score }} / 3 in {{ result.time }}s
+            </li>
+        {% empty %}
+            <li>No games played yet.</li>
+        {% endfor %}
+    </ul>
+    {% endblock %}
 
 </body>
 </html>

@@ -1,0 +1,6 @@
+Cmd : venv\Scripts\activate.bat
+
+Change Execution Policy (Permanent Fix for PowerShell): Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+
+PowerShell: .\venv\Scripts\Activate.ps1
+

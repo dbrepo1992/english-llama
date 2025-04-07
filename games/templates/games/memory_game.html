@@ -21,121 +21,21 @@
     </style>
 </head>
 <body>
-    <h1>Memory Game</h1>
-    <h2>Time: <span id="timer">0</span> seconds</h2>
-    <h2>Score: <span id="score">0</span></h2>
-    <h2>Select Difficulty:</h2>
-        <select id="difficulty">
-        <option value="easy">Easy (3 pairs)</option>
-        <option value="medium">Medium (6 pairs)</option>
-        <option value="hard">Hard (9 pairs)</option>
-        </select>
-    <button onclick="startGame()">Start Game</button>
+    {% extends "games/base.html" %}
+{% load static %}
 
-    <div id="game-board"></div>
-        <div id="game-board"></div>
+{% block title %}Memory Game{% endblock %}
 
-    <script>
-        const CARD_SETS = {
-            easy: ['🐶','🐱','🦊'],
-            medium: ['🐶','🐱','🦊','🐰','🐸','🐵'],
-            hard: ['🐶','🐱','🦊','🐰','🐸','🐵','🐻','🐼','🦁']
-        };
+{% block content %}
+<h1>🧠 Memory Game</h1>
+<p id="game-status">Match all the pairs!</p>
+<div id="game-board" class="grid"></div>
 
-        let flipped = [];
-        let score = 0;
-        let time = 0;
-        let timerInterval;
-        let totalPairs = 0;
+<p id="score-time">Score: 0 | Time: 0s</p>
+<button onclick="startGame()">🔁 Restart</button>
 
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                time++;
-                document.getElementById('timer').innerText = time;
-            }, 1000);
-        }
-
-        function stopTimer() {
-            clearInterval(timerInterval);
-        }
-
-        function sendScoreToServer(time, score) {
-            const difficulty = document.getElementById('difficulty').value;
-
-            fetch('/games/submit_score/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ time: time, score: score, difficulty: difficulty })
-            })
-            .then(res => res.json())
-            .then(data => console.log("Score saved:", data))
-            .catch(err => console.error("Error saving score:", err));
-        }
-
-
-        function startGame() {
-            document.getElementById('game-board').innerHTML = '';
-            document.getElementById('score').innerText = 0;
-            document.getElementById('timer').innerText = 0;
-            score = 0;
-            time = 0;
-            flipped = [];
-            stopTimer();
-
-            const difficulty = document.getElementById('difficulty').value;
-            const emojis = CARD_SETS[difficulty];
-            totalPairs = emojis.length;
-            const cards = [...emojis, ...emojis].sort(() => 0.5 - Math.random());
-
-            const board = document.getElementById('game-board');
-
-            cards.forEach((emoji, index) => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.dataset.emoji = emoji;
-                card.dataset.index = index;
-                card.innerText = '?';
-                board.appendChild(card);
-            });
-
-            board.addEventListener('click', handleCardClick, { once: true });
-            startTimer();
-        }
-
-        function handleCardClick(e) {
-            const board = document.getElementById('game-board');
-            board.addEventListener('click', handleCardClick);
-            const card = e.target;
-            if (!card.classList.contains('card') || card.classList.contains('matched') || flipped.length === 2) return;
-
-            card.innerText = card.dataset.emoji;
-            flipped.push(card);
-
-            if (flipped.length === 2) {
-                if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
-                    flipped[0].classList.add('matched');
-                    flipped[1].classList.add('matched');
-                    score++;
-                    document.getElementById('score').innerText = score;
-
-                    if (score === totalPairs) {
-                        stopTimer();
-                        alert(`You win! Time: ${time} seconds`);
-                        sendScoreToServer(time, score);
-                    }
-                } else {
-                    setTimeout(() => {
-                        flipped[0].innerText = '?';
-                        flipped[1].innerText = '?';
-                    }, 800);
-                }
-                flipped = [];
-            }
-        }
-        </script>
+<script src="{% static 'games/js/memory.js' %}"></script>
+{% endblock %}
 
 </body>
 </html>
