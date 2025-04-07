@@ -3,21 +3,23 @@
 <head>
     <title>Memory Game</title>
     <style>
-        .card {
-            width: 100px;
-            height: 100px;
-            background: #ccc;
-            display: inline-block;
-            margin: 5px;
-            font-size: 2em;
-            text-align: center;
-            line-height: 100px;
-            cursor: pointer;
-        }
-        .matched {
-            background: #8f8;
-            pointer-events: none;
-        }
+        #game-board {
+  display: grid;
+  gap: 10px;
+}
+.card {
+  background: #f2f2f2;
+  border-radius: 8px;
+  padding: 20px;
+  font-size: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+}
+.card.matched {
+  background: #d4edda;
+  pointer-events: none;
+}
+
     </style>
 </head>
 <body>
@@ -32,6 +34,16 @@
 <div id="game-board" class="grid"></div>
 
 <p id="score-time">Score: 0 | Time: 0s</p>
+<div>
+    <button class="difficulty-btn" data-level="easy">Easy</button>
+    <button class="difficulty-btn" data-level="medium">Medium</button>
+    <button class="difficulty-btn" data-level="hard">Hard</button>
+  </div>
+  <div id="game-board" class="game-board"></div>
+  <p id="score-time">Score: 0 | Time: 0s</p>
+  <p id="game-status"></p>
+  <button id="restart-btn">🔁 Restart</button>
+
 <button onclick="startGame()">🔁 Restart</button>
 
 <script src="{% static 'games/js/memory.js' %}"></script>
