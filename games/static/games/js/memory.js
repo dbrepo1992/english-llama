@@ -5,6 +5,15 @@ let matchedPairs = 0;
 let startTime;
 let timerInterval;
 let selectedDifficulty = "easy"; // default
+const flipSound = new Audio("/static/sounds/flip.wav");
+const matchSound = new Audio("/static/sounds/match.wav");
+const winSound = new Audio("/static/sounds/win.wav");
+
+function playSound(sound) {
+  const s = sound.cloneNode();
+  s.play();
+}
+
 
 const wordEmojiPairs = {
   "Cat": "😺", "Dog": "🐶", "Monkey": "🐵", "Pig": "🐷", "Panda": "🐼", "Fox": "🦊", "Cow": "🐮", "Rabbit": "🐰",
@@ -95,6 +104,7 @@ function flipCard(card, index) {
   if (flipped.length >= 2 || card.classList.contains("matched")) return;
 
   card.innerHTML = cards[index].value;
+  playSound(flipSound);
   flipped.push({ card, index });
 
   if (flipped.length === 2) {
@@ -108,11 +118,14 @@ function flipCard(card, index) {
       matchedPairs++;
       score++;
       flipped = [];
+      playSound(matchSound);
 
       if (matchedPairs === cards.length / 2) {
         clearInterval(timerInterval);
         const timeTaken = Math.floor((Date.now() - startTime) / 1000);
         document.getElementById("game-status").textContent = `🎉 You won! Score: ${score}, Time: ${timeTaken}s`;
+        playSound(winSound);
+
 
         fetch("/games/memory/save/", {
           method: "POST",
