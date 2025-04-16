@@ -14,9 +14,10 @@ class Question(models.Model):
     difficulty = models.CharField(max_length=10, choices=DIFFICULTY_LEVELS, default='easy')
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.text
-
+    def get_options(self):
+        options = [self.correct_answer] + self.incorrect_answers
+        random.shuffle(options)
+        return options
 
 class QuizAttempt(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

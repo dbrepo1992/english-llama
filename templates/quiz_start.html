@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Start Quiz{% endblock %}
+
+{% block content %}
+<h1>🎓 Choose Difficulty</h1>
+<form action="{% url 'quiz:quiz-game' %}" method="get">
+    <label>
+        <input type="radio" name="difficulty" value="easy" required> 🟢 Easy
+    </label><br>
+    <label>
+        <input type="radio" name="difficulty" value="medium"> 🟠 Medium
+    </label><br>
+    <label>
+        <input type="radio" name="difficulty" value="hard"> 🔴 Hard
+    </label><br><br>
+    <button type="submit">Start Quiz</button>
+</form>
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="question_id" value="{{ question.id }}">
+    <input type="hidden" name="difficulty" value="{{ difficulty }}">
+</form>
+<a href="{% url 'quiz:quiz-game' %}?difficulty={{ difficulty }}" class="button">Next Question</a>
+{% endblock %}

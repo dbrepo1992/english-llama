@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}English Quiz{% endblock %}
+
+{% block content %}
+  <h1>🧠 Welcome to the English Quiz</h1>
+  <p>Test your knowledge across different levels of difficulty.</p>
+  <a href="{% url 'quiz:quiz_game' %}?difficulty=easy" class="btn">Start Easy Quiz</a>
+  <a href="{% url 'quiz:quiz_game' %}?difficulty=medium" class="btn">Start Medium Quiz</a>
+  <a href="{% url 'quiz:quiz_game' %}?difficulty=hard" class="btn">Start Hard Quiz</a>
+{% endblock %}

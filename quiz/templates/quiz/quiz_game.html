@@ -1,27 +1,34 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}🧠 Quiz Game{% endblock %}
 
 {% block content %}
-<h1>🧠 Welcome to the Quiz!</h1>
+<h1>🧠 English Quiz</h1>
 
 {% if question %}
-    <form method="post">
-        {% csrf_token %}
-        <p><strong>{{ question.question_text }}</strong></p>
+    {% if show_result %}
+        <p><strong>{{ result_message }}</strong></p>
+        <a href="{% url 'quiz:quiz-game' %}" class="button">Next Question</a>
+    {% else %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="question_id" value="{{ question.id }}">
+            <p><strong>{{ question.question_text }}</strong></p>
 
-        {% for option in question.get_options %}
-            <div>
-                <label>
-                    <input type="radio" name="answer" value="{{ option }}">
-                    {{ option }}
-                </label>
-            </div>
-        {% endfor %}
+            {% for option in question.get_options %}
+                <div>
+                    <label>
+                        <input type="radio" name="answer" value="{{ option }}" required>
+                        {{ option }}
+                    </label>
+                </div>
+            {% endfor %}
 
-        <button type="submit">Submit</button>
-    </form>
+            <button type="submit">Submit Answer</button>
+        </form>
+    {% endif %}
 {% else %}
-    <p>No questions available.</p>
+    <p>No questions available. Please add some in the admin panel.</p>
 {% endif %}
 {% endblock %}
