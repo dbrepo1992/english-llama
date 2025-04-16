@@ -1,32 +1,20 @@
+# Virtual env
+venv/
+.env
+
 # Python
 __pycache__/
 *.py[cod]
 *.sqlite3
-
-# Django specific
-db.sqlite3
 *.log
 
-# VS Code & IDEs
+# VSCode
 .vscode/
-.idea/
 
-# Virtual Environment
-venv/
-ENV/
-env/
+# Django stuff
+staticfiles/
+db.sqlite3
 
-# OS junk
+# OS-specific
 .DS_Store
 Thumbs.db
-
-# Byte-compiled files
-*.pyo
-*.pyd
-
-# Pytest cache
-.pytest_cache/
-
-# Coverage reports
-htmlcov/
-.coverage
