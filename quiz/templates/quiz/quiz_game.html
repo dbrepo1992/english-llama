@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}🧠 Quiz Game{% endblock %}
+
+{% block content %}
+<h1>🧠 Welcome to the Quiz!</h1>
+
+{% if question %}
+    <form method="post">
+        {% csrf_token %}
+        <p><strong>{{ question.question_text }}</strong></p>
+
+        {% for option in question.get_options %}
+            <div>
+                <label>
+                    <input type="radio" name="answer" value="{{ option }}">
+                    {{ option }}
+                </label>
+            </div>
+        {% endfor %}
+
+        <button type="submit">Submit</button>
+    </form>
+{% else %}
+    <p>No questions available.</p>
+{% endif %}
+{% endblock %}

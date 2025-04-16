@@ -8,3 +8,6 @@ def memory_game(request):
 
 def leaderboard(request):
     return render(request, 'games/leaderboard.html')
+
+def quiz_game(request):
+    return render(request, 'quiz/quiz_game.html')
