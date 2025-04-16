@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Django specific
+db.sqlite3
+*.log
+
+# VS Code & IDEs
+.vscode/
+.idea/
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Byte-compiled files
+*.pyo
+*.pyd
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
