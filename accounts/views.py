@@ -6,6 +6,11 @@ from django.shortcuts import render
 from django.db.models import Avg, Min, Max, Count
 from games.models import GameResult
 from django.utils.timezone import now
+import openai
+import os
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 
 def register(request):
     if request.method == 'POST':

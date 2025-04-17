@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2>{{ object.question_text }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" value="A" id="optionA">
+            <label class="form-check-label" for="optionA">{{ object.option_a }}</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" value="B" id="optionB">
+            <label class="form-check-label" for="optionB">{{ object.option_b }}</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" value="C" id="optionC">
+            <label class="form-check-label" for="optionC">{{ object.option_c }}</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="answer" value="D" id="optionD">
+            <label class="form-check-label" for="optionD">{{ object.option_d }}</label>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+    </form>
+</div>
+{% endblock %}

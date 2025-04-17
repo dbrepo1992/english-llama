@@ -1,38 +1,53 @@
-# quiz/views.py
-from django.shortcuts import render, redirect
-from django.views import View
+import openai
+from django.views.generic import TemplateView
+from django.shortcuts import render
 from .models import Question
-import random
 
-class QuizView(View):
-    def get(self, request):
-        difficulty = request.GET.get("difficulty", "easy")
-        questions = list(Question.objects.filter(difficulty=difficulty))
+openai.api_key = "your_openai_key_here"  # Use env variable in production
 
-        if not questions:
-            return render(request, "quiz/quiz_game.html", {
-                "question": None,
-                "difficulty": difficulty
-            })
+class QuizStartView(TemplateView):
+    template_name = "quiz/quiz_start.html"
 
-        question = random.choice(questions)
-        return render(request, "quiz/quiz_game.html", {
-            "question": question,
-            "difficulty": difficulty
-        })
-
-    def post(self, request):
-        selected_answer = request.POST.get("answer")
-        question_id = request.POST.get("question_id")
+    def post(self, request, *args, **kwargs):
+        topic = request.POST.get("topic")
         difficulty = request.POST.get("difficulty")
-        question = Question.objects.get(id=question_id)
 
-        correct = selected_answer == question.correct_answer
-        result_message = "✅ Correct!" if correct else f"❌ Correct answer: {question.correct_answer}"
+        prompt = f"""
+        Create a multiple-choice English question about {topic}, difficulty: {difficulty}.
+        Format:
+        Question: ...
+        A) ...
+        B) ...
+        C) ...
+        D) ...
+        Correct: A/B/C/D
+        """
 
-        return render(request, "quiz/quiz_game.html", {
-            "question": question,
-            "difficulty": difficulty,
-            "result_message": result_message,
-            "show_result": True
+        response = openai.Completion.create(
+            engine="gpt-3.5-turbo-instruct",
+            prompt=prompt,
+            temperature=0.7,
+            max_tokens=200
+        )
+
+        generated = response.choices[0].text.strip()
+        lines = generated.split("\n")
+
+        question_text = lines[0].replace("Question: ", "")
+        options = {line[0]: line[3:].strip() for line in lines[1:5]}
+        correct_option = lines[5].split(":")[1].strip()
+
+        # Save to DB
+        Question.objects.create(
+            question_text=question_text,
+            option_a=options["A"],
+            option_b=options["B"],
+            option_c=options["C"],
+            option_d=options["D"],
+            correct_option=correct_option,
+            difficulty=difficulty
+        )
+
+        return render(request, "quiz/quiz_start.html", {
+            "success": "Question generated and saved!"
         })

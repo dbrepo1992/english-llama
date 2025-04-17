@@ -1,11 +1,25 @@
+{% if success %}
+<div class="alert alert-success">{{ success }}</div>
+{% endif %}
 {% extends "base.html" %}
-
-{% block title %}English Quiz{% endblock %}
-
 {% block content %}
-  <h1>🧠 Welcome to the English Quiz</h1>
-  <p>Test your knowledge across different levels of difficulty.</p>
-  <a href="{% url 'quiz:quiz_game' %}?difficulty=easy" class="btn">Start Easy Quiz</a>
-  <a href="{% url 'quiz:quiz_game' %}?difficulty=medium" class="btn">Start Medium Quiz</a>
-  <a href="{% url 'quiz:quiz_game' %}?difficulty=hard" class="btn">Start Hard Quiz</a>
+<div class="container mt-5">
+    <h2 class="mb-4">🧠 Generate Your English Quiz</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="topic" class="form-label">Topic</label>
+            <input type="text" name="topic" class="form-control" placeholder="e.g. Grammar, Vocabulary" required>
+        </div>
+        <div class="mb-3">
+            <label for="difficulty" class="form-label">Difficulty</label>
+            <select name="difficulty" class="form-select" required>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Generate Question</button>
+    </form>
+</div>
 {% endblock %}

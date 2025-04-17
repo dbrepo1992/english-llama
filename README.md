@@ -12,3 +12,6 @@ An AI-powered English learning platform featuring interactive games and quizzes.
 
 ## 📂 Project Structure
 
+english-llama/ ├── config/ # Django settings and urls ├── accounts/ # User accounts and auth ├── lessons/ # Lesson content ├── games/ # Educational games ├── quiz/ # AI quizzes ├── static/ # Static files (CSS/JS/images) ├── templates/ # Shared templates ├── manage.py ├── requirements.txt └── .gitignore
+
+
