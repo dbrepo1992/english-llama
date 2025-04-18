@@ -1,34 +1,42 @@
 {% extends "base.html" %}
-{% load static %}
-
-{% block title %}🧠 Quiz Game{% endblock %}
-
 {% block content %}
-<h1>🧠 English Quiz</h1>
 
-{% if question %}
-    {% if show_result %}
-        <p><strong>{{ result_message }}</strong></p>
-        <a href="{% url 'quiz:quiz-game' %}" class="button">Next Question</a>
-    {% else %}
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="question_id" value="{{ question.id }}">
-            <p><strong>{{ question.question_text }}</strong></p>
+<div class="container my-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">🧠 Quiz on "{{ topic }}"</h2>
+  </div>
 
-            {% for option in question.get_options %}
-                <div>
-                    <label>
-                        <input type="radio" name="answer" value="{{ option }}" required>
-                        {{ option }}
-                    </label>
-                </div>
+  {% if questions %}
+    <form method="post">
+      {% csrf_token %}
+
+      {% for q in questions %}
+        <div class="card mb-4 shadow-sm rounded-4">
+          <div class="card-body">
+            <h5 class="card-title">{{ forloop.counter }}. {{ q.question }}</h5>
+            {% for option in q.options %}
+              <div class="form-check mt-2">
+                <input class="form-check-input" type="radio" name="q{{ forloop.parentloop.counter0 }}" value="{{ option|slice:":1" }}" id="q{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}">
+                <label class="form-check-label" for="q{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}">
+                  {{ option }}
+                </label>
+              </div>
             {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
 
-            <button type="submit">Submit Answer</button>
-        </form>
-    {% endif %}
-{% else %}
-    <p>No questions available. Please add some in the admin panel.</p>
-{% endif %}
+      <div class="text-center">
+        <button type="submit" class="btn btn-success px-4 py-2">✅ Submit Answers</button>
+      </div>
+    </form>
+  {% else %}
+    <div class="alert alert-warning text-center">⚠️ No quiz content available.</div>
+  {% endif %}
+
+  <div class="mt-4 text-center">
+    <a href="{% url 'quiz:quiz-start' %}" class="btn btn-secondary">⬅️ Back to Start</a>
+  </div>
+</div>
+
 {% endblock %}

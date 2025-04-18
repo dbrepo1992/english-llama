@@ -1,53 +1,48 @@
-import openai
-from django.views.generic import TemplateView
+from django.views import View
 from django.shortcuts import render
-from .models import Question
+from openai import OpenAI
+import os
+import re
 
-openai.api_key = "your_openai_key_here"  # Use env variable in production
-
-class QuizStartView(TemplateView):
+class QuizStartView(View):
     template_name = "quiz/quiz_start.html"
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
         topic = request.POST.get("topic")
-        difficulty = request.POST.get("difficulty")
+        prompt = f"Create a short English quiz on the topic: {topic}. Include 5 multiple-choice questions with 4 answer options (A-D)."
 
-        prompt = f"""
-        Create a multiple-choice English question about {topic}, difficulty: {difficulty}.
-        Format:
-        Question: ...
-        A) ...
-        B) ...
-        C) ...
-        D) ...
-        Correct: A/B/C/D
-        """
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-        response = openai.Completion.create(
-            engine="gpt-3.5-turbo-instruct",
-            prompt=prompt,
-            temperature=0.7,
-            max_tokens=200
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=500
         )
 
-        generated = response.choices[0].text.strip()
-        lines = generated.split("\n")
+        raw_text = response.choices[0].message.content.strip()
+        questions = self.parse_quiz_text(raw_text)
 
-        question_text = lines[0].replace("Question: ", "")
-        options = {line[0]: line[3:].strip() for line in lines[1:5]}
-        correct_option = lines[5].split(":")[1].strip()
-
-        # Save to DB
-        Question.objects.create(
-            question_text=question_text,
-            option_a=options["A"],
-            option_b=options["B"],
-            option_c=options["C"],
-            option_d=options["D"],
-            correct_option=correct_option,
-            difficulty=difficulty
-        )
-
-        return render(request, "quiz/quiz_start.html", {
-            "success": "Question generated and saved!"
+        return render(request, "quiz/quiz_game.html", {
+            "topic": topic,
+            "questions": questions
         })
+
+    def parse_quiz_text(self, text):
+        blocks = re.split(r'\n(?=\d+\.)', text)  # Split by question numbers like "1."
+        parsed_questions = []
+
+        for block in blocks:
+            lines = block.strip().split("\n")
+            if not lines:
+                continue
+            question = lines[0].strip()
+            options = [line.strip() for line in lines[1:] if line.strip()]
+            parsed_questions.append({
+                "question": question,
+                "options": options
+            })
+
+        return parsed_questions
